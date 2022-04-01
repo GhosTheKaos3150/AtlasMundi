@@ -7,8 +7,14 @@ const routes = [
 
   {
     path: "/signin",
-    component: () => import("layouts/MainLayout.vue"),
+    component: () => import("layouts/FormLayout.vue"),
     children: [{ path: "", component: () => import("pages/SigninPage.vue") }],
+  },
+
+  {
+    path: "/home",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/HomePage.vue") }],
   },
 
   // Always leave this as last one,

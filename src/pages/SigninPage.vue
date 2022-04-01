@@ -9,7 +9,14 @@
           class="q-mt-xl absolute-center"
         />
       </div>
-      <div v-if="!isTermos" class="absolute-center q-pa-md q-mt-xl">
+      <div
+        v-if="!isTermos"
+        class="absolute-bottom q-pa-md q-my-md"
+        style="max-width: 450px; margin-left: auto; margin-right: auto"
+      >
+        <div class="text-h5 flex flex-center row" style="color: lightgray">
+          C A D A S T R O
+        </div>
         <div class="row q-my-md">
           <q-input
             dark
@@ -91,9 +98,20 @@
             class="flex col"
             label="Senha"
             v-model="pwd"
+            :type="pwd_field_type"
           >
             <template v-slot:prepend>
               <q-icon name="mdi-lock" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                :name="pwd_field_type == 'password' ? 'mdi-eye-off' : 'mdi-eye'"
+                @click="
+                  pwd_field_type == 'password'
+                    ? (pwd_field_type = 'text')
+                    : (pwd_field_type = 'password')
+                "
+              />
             </template>
           </q-input>
         </div>
@@ -105,9 +123,22 @@
             class="flex col"
             label="Confirme sua Senha"
             v-model="pwd_cfm"
+            :type="pwd_field_type_c"
           >
             <template v-slot:prepend>
               <q-icon name="mdi-lock-alert" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                :name="
+                  pwd_field_type_c == 'password' ? 'mdi-eye-off' : 'mdi-eye'
+                "
+                @click="
+                  pwd_field_type_c == 'password'
+                    ? (pwd_field_type_c = 'text')
+                    : (pwd_field_type_c = 'password')
+                "
+              />
             </template>
           </q-input>
         </div>
@@ -149,6 +180,7 @@
           <q-btn
             style="background: #11a3b9; color: lightgray"
             class="full-width"
+            :disable="!termos_concordo"
             @click="cadastrar"
             >Cadastrar</q-btn
           >
@@ -169,9 +201,13 @@ export default defineComponent({
       alias: "",
       email: "",
       cpf: "",
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString().slice(0, 10),
       pwd: "",
       pwd_cfm: "",
+
+      pwd_field_type: "password",
+      pwd_field_type_c: "password",
+
       termos_concordo: false,
       termos:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +

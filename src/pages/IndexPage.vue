@@ -40,10 +40,23 @@
           <template v-slot:prepend>
             <q-icon name="mdi-lock" />
           </template>
+          <template v-slot:append>
+            <q-icon
+              :name="pwd_field_type == 'password' ? 'mdi-eye-off' : 'mdi-eye'"
+              @click="
+                pwd_field_type == 'password'
+                  ? (pwd_field_type = 'text')
+                  : (pwd_field_type = 'password')
+              "
+            />
+          </template>
         </q-input>
       </div>
       <div class="row q-my-lg">
-        <q-btn style="background: #11a3b9; color: lightgray" class="full-width"
+        <q-btn
+          style="background: #11a3b9; color: lightgray"
+          class="full-width"
+          @click="sendToHome"
           >Entrar</q-btn
         >
       </div>
@@ -62,6 +75,7 @@
 
 <script>
 import { defineComponent } from "vue";
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   name: "IndexPage",
@@ -69,9 +83,30 @@ export default defineComponent({
     return {
       user: "",
       pwd: "",
+
+      pwd_field_type: "password",
+    };
+  },
+  setup() {
+    const $q = useQuasar();
+
+    return {
+      showLoginError() {
+        $q.notify({
+          message: "Usuário/Senha Incorretos",
+          color: "red",
+        });
+      },
     };
   },
   methods: {
+    sendToHome() {
+      if (this.user.length >= 3 && this.pwd >= 8) {
+        this.$router.push("/home");
+      } else {
+        this.showLoginError();
+      }
+    },
     sendToSignin() {
       this.$router.push("/signin");
     },
