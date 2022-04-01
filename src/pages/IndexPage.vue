@@ -43,7 +43,9 @@
         </q-input>
       </div>
       <div class="row q-my-lg">
-        <q-btn color="secondary" class="full-width">Entrar</q-btn>
+        <q-btn style="background: #11a3b9; color: lightgray" class="full-width"
+          >Entrar</q-btn
+        >
       </div>
       <div class="flex justify-center" style="color: lightgray">
         Ainda não possui uma conta?
