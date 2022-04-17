@@ -13,8 +13,14 @@ const routes = [
 
   {
     path: "/home",
-    component: () => import("layouts/MainLayout.vue"),
+    component: () => import("layouts/AppLayout.vue"),
     children: [{ path: "", component: () => import("pages/HomePage.vue") }],
+  },
+
+  {
+    path: "/chat",
+    component: () => import("layouts/FormLayout.vue"),
+    children: [{ path: "", component: () => import("pages/ChatPage.vue") }],
   },
 
   // Always leave this as last one,

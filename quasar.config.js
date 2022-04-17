@@ -80,6 +80,13 @@ module.exports = configure(function (ctx) {
         type: "http",
       },
       port: 8080,
+      proxy: [
+        {
+          context: ["/", "/v1", "/v1/", "/v1/profiles"],
+          target: "http://atlasmundi.herokuapp.com",
+          changeOrigin: true,
+        },
+      ],
       open: true, // opens browser window automatically
     },
 

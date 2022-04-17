@@ -100,9 +100,29 @@ export default defineComponent({
     };
   },
   methods: {
-    sendToHome() {
-      if (this.user.length >= 3 && this.pwd >= 8) {
-        this.$router.push("/home");
+    async sendToHome() {
+      console.log(this.user);
+      console.log(this.pwd);
+      if (this.user.length >= 3 && this.pwd.length >= 8) {
+        var options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            login: this.user.replace("@", ""),
+            password: this.pwd,
+          }),
+        };
+
+        var res = await fetch("/login", options);
+
+        if (res.status === 200) {
+          localStorage.setItem("authToken", res.body);
+          this.$router.push("/home");
+        } else {
+          this.showLoginError();
+        }
       } else {
         this.showLoginError();
       }

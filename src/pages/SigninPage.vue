@@ -5,8 +5,8 @@
         <img
           alt="Atlas-Mundi logo"
           src="logo.png"
-          style="width: 156px; height: 168px"
-          class="q-mt-xl absolute-center"
+          style="width: 78px; height: 84px"
+          class="q-mt-md absolute-center"
         />
       </div>
       <div
@@ -67,6 +67,21 @@
             outlined
             round
             class="flex col"
+            label="Telefone"
+            v-model="phone"
+            type="tel"
+          >
+            <template v-slot:prepend>
+              <q-icon name="mdi-phone" />
+            </template>
+          </q-input>
+        </div>
+        <div class="row q-my-md">
+          <q-input
+            dark
+            outlined
+            round
+            class="flex col"
             label="CPF"
             v-model="cpf"
           >
@@ -83,10 +98,37 @@
             class="flex col"
             label="Nascimento"
             v-model="date"
-            type="date"
+            mask="##/##/####"
+            :rules="['##/##/####']"
           >
             <template v-slot:prepend>
               <q-icon name="mdi-calendar" />
+            </template>
+            <template v-slot:append>
+              <q-icon name="mdi-calendar-search">
+                <q-popup-proxy
+                  ref="qDateProxy"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    v-model="date"
+                    mask="DD/MM/YYYY"
+                    :locale="dateLocale"
+                    :options="getMaxDate"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        label="Fechar"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
             </template>
           </q-input>
         </div>
@@ -192,16 +234,47 @@
 
 <script>
 import { defineComponent } from "@vue/runtime-core";
+import { ref } from "vue";
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   name: "SigninPage",
+
+  setup() {
+    const $q = useQuasar();
+
+    return {
+      showLoginError() {
+        $q.notify({
+          message: "Verifique seus dados e\ntente novamente",
+          color: "red",
+        });
+      },
+      showLoginSucess(user) {
+        $q.notify({
+          message: `Seja Bem vindo ${user}! :)\nFaça seu Login!`,
+          color: "green",
+        });
+      },
+    };
+  },
   data() {
     return {
       user: "",
       alias: "",
+      phone: "",
       email: "",
       cpf: "",
-      date: new Date().toISOString().slice(0, 10),
+      date: ref(
+        this.deltaDate(new Date(), 0, 0, -18).toLocaleDateString().slice(0, 10)
+      ),
+      maxDate: ref(
+        this.deltaDate(new Date(), 0, 0, -18)
+          .toISOString()
+          .slice(0, 10)
+          .split("-")
+          .join("/")
+      ),
       pwd: "",
       pwd_cfm: "",
 
@@ -228,6 +301,47 @@ export default defineComponent({
         " Nulla facilisi. Suspendisse sed ligula nulla. Vestibulum accumsan venenatis venenatis.",
 
       isTermos: false,
+
+      dateLocale: {
+        days: [
+          "Domingo",
+          "Segunda-feira",
+          "Terça-feira",
+          "Quarta-feira",
+          "Quinta-feira",
+          "Sexta-feira",
+          "Sábado",
+        ],
+        daysShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+        months: [
+          "Janeiro",
+          "Fevereiro",
+          "Março",
+          "Abril",
+          "Maio",
+          "Junho",
+          "Julho",
+          "Agosto",
+          "Setembro",
+          "Outubro",
+          "Novembro",
+          "Dezembro",
+        ],
+        monthsShort: [
+          "Jan",
+          "Fev",
+          "Mar",
+          "Abr",
+          "Mai",
+          "Jun",
+          "Jul",
+          "Ago",
+          "Set",
+          "Out",
+          "Nov",
+          "Dez",
+        ],
+      },
     };
   },
   methods: {
@@ -235,7 +349,49 @@ export default defineComponent({
       this.isTermos = true;
     },
     cadastrar() {
-      this.$router.push("/");
+      this.createUser();
+    },
+    getMaxDate(date) {
+      return date <= this.maxDate;
+    },
+    async createUser() {
+      var options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          taxId: this.cpf,
+          name: this.alias,
+          login: this.user,
+          password: this.pwd,
+          birthDate: this.date + "T00:00:00.000-03:00",
+          phoneNumber: this.phone,
+        }),
+      };
+
+      var res = await fetch("/v1/profiles", options);
+
+      if (res.status === 200) {
+        this.showLoginSucess(this.alias.split(" ")[0]);
+        this.$router.push("/");
+      } else {
+        this.showLoginError();
+      }
+    },
+    deltaDate(input, days, months, years) {
+      return new Date(
+        input.getFullYear() + years,
+        input.getMonth() + months,
+        Math.min(
+          input.getDate() + days,
+          new Date(
+            input.getFullYear() + years,
+            input.getMonth() + months + 1,
+            0
+          ).getDate()
+        )
+      );
     },
   },
 });
