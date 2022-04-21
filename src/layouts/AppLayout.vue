@@ -38,12 +38,21 @@
           border-right: 1px solid #142044;
         "
       >
-        <q-item clickable v-ripple class="q-py-lg">
+        <q-item v-if="isHome" clickable v-ripple class="q-py-lg">
           <q-item-section avatar>
             <q-icon name="mdi-account" />
           </q-item-section>
 
-          <q-item-section class="text-h6"> Perfil </q-item-section>
+          <q-item-section class="text-h6" @click="perfil">
+            Perfil
+          </q-item-section>
+        </q-item>
+        <q-item v-else clickable v-ripple class="q-py-lg">
+          <q-item-section avatar>
+            <q-icon name="mdi-home" />
+          </q-item-section>
+
+          <q-item-section class="text-h6" @click="home"> Home </q-item-section>
         </q-item>
         <q-item clickable v-ripple class="q-py-lg">
           <q-item-section avatar>
@@ -57,7 +66,7 @@
             <q-icon name="mdi-logout" />
           </q-item-section>
 
-          <q-item-section class="text-h6"> Sair </q-item-section>
+          <q-item-section class="text-h6" @click="sair"> Sair </q-item-section>
         </q-item>
       </q-scroll-area>
     </q-drawer>
@@ -77,11 +86,24 @@ export default defineComponent({
   data() {
     return {
       drawer: false,
+      isHome: false,
     };
   },
+  mounted() {
+    this.isHome = this.$route.path == "/home";
+  },
   methods: {
-    returnPage() {
-      this.$router.go(-1);
+    sair() {
+      this.$router.push("/");
+      this.isHome = false;
+    },
+    perfil() {
+      this.$router.push("/profile");
+      this.isHome = false;
+    },
+    home() {
+      this.$router.push("/home");
+      this.isHome = true;
     },
   },
 });
