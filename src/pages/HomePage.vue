@@ -6,7 +6,7 @@
     <div class="q-py-sm text-center col">
       <div class="q-py-sm text-center row" style="color: lightgray">
         <div class="q-py-sm text-center col">
-          <div class="text-h6">Cidade-ES</div>
+          <div class="text-h6">Cidade-UF</div>
           <div class="text-p">
             <q-badge rounded color="green" align="middle" /> Visivel
           </div>
@@ -37,11 +37,18 @@
           class="fit"
         >
           <q-tab-panel name="1" class="fit" style="padding: 0px">
-            <q-img
-              src="https://assets.website-files.com/5e832e12eb7ca02ee9064d42/5f7db426b676b95755fb2844_Group%20805.jpg"
-              spinner-color="white"
-              class="fit"
-            />
+            <l-map
+              ref="map"
+              v-model:zoom="zoom"
+              :center="[center['lat'], center['long']]"
+              style="z-index: 0"
+            >
+              <l-tile-layer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                layer-type="base"
+                name="OpenStreetMap"
+              ></l-tile-layer>
+            </l-map>
             <q-page-sticky position="bottom-right" :offset="[18, 18]">
               <q-btn fab icon="mdi-pin" style="background-color: #11a3b9" />
             </q-page-sticky>
@@ -56,19 +63,24 @@
           </q-tab-panel>
           <q-tab-panel class="fit" style="padding: 0px" name="2">
             <q-list>
-              <q-item v-for="user in chatUsers" :key="user">
+              <q-item
+                v-for="user in chatUsers"
+                :key="user"
+                clickable
+                @click="$router.push(`/chat/${user.userName}`)"
+              >
                 <q-item-section top avatar>
                   <q-avatar color="primary" text-color="white">
                     <q-img
                       v-if="user.profPic.length > 0"
                       :src="user.profPic"
                     ></q-img>
-                    <div v-else>{{ user.nome[0] }}</div>
+                    <div v-else>{{ user.name[0] }}</div>
                   </q-avatar>
                 </q-item-section>
                 <q-item-section class="text-left">
                   <q-item-label style="color: #11a3b9">{{
-                    user.nome
+                    user.name
                   }}</q-item-label>
                   <q-item-label style="color: aliceblue" caption lines="2">{{
                     user.lastMsg
@@ -90,26 +102,37 @@
 
 <script>
 import { defineComponent } from "vue";
+import "leaflet/dist/leaflet.css";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 
 export default defineComponent({
+  components: {
+    LMap,
+    LTileLayer,
+  },
   name: "HomePage",
   data() {
     return {
       chatUsers: [
         {
-          nome: "Antonio M Dores",
+          name: "Antonio M Dores",
+          userName: "amdores",
           profPic:
             "https://i.pinimg.com/736x/d9/5a/28/d95a28bfa4e28bcfd64e27aaf43a06f9.jpg",
           lastMsg: "Eu: Macabro",
         },
         {
-          nome: "Dolores F Barriga",
+          name: "Dolores F Barriga",
+          userName: "doloresfb",
           profPic: "",
           lastMsg: "PARA DE ZOAR MEU NOME",
         },
       ],
       newMessages: 0,
       tab: "1",
+
+      zoom: 18,
+      center: { lat: -3.768838365841603, long: -38.47866626878118 },
     };
   },
 });

@@ -25,11 +25,11 @@ export default defineComponent({
     };
   },
   mounted() {
-    switch (this.$route.path) {
+    switch (this.$route.matched[0].path) {
       case "/signin":
         this.name = "Cadastro";
         break;
-      case "/chat":
+      case "/chat/:who":
         this.name = "Bate-Papo";
         break;
       case "/profileedit":

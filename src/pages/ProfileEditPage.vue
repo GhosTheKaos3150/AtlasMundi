@@ -87,9 +87,9 @@ export default defineComponent({
   name: "HomePage",
   data() {
     return {
-      name: "Chevrolet S Ford",
-      user: "@chevsford",
-      email: "chevsford@email.com",
+      name: "Takamura",
+      user: "@takedo",
+      email: "takamuratakedo1101@email.com",
     };
   },
   methods: {

@@ -18,7 +18,7 @@
           outlined
           round
           class="flex col"
-          label="Senha"
+          label="Senha Atual"
           v-model="pwd"
           :type="pwd_field_type"
         >
@@ -32,6 +32,31 @@
                 pwd_field_type == 'password'
                   ? (pwd_field_type = 'text')
                   : (pwd_field_type = 'password')
+              "
+            />
+          </template>
+        </q-input>
+      </div>
+      <div class="row q-my-md">
+        <q-input
+          dark
+          outlined
+          round
+          class="flex col"
+          label="Nova Senha"
+          v-model="new_pwd"
+          :type="pwd_field_type_n"
+        >
+          <template v-slot:prepend>
+            <q-icon name="mdi-lock" />
+          </template>
+          <template v-slot:append>
+            <q-icon
+              :name="pwd_field_type_n == 'password' ? 'mdi-eye-off' : 'mdi-eye'"
+              @click="
+                pwd_field_type_n == 'password'
+                  ? (pwd_field_type_n = 'text')
+                  : (pwd_field_type_n = 'password')
               "
             />
           </template>
@@ -93,9 +118,11 @@ export default defineComponent({
   data() {
     return {
       pwd: "",
+      new_pwd: "",
       pwd_cfm: "",
 
       pwd_field_type: "password",
+      pwd_field_type_n: "password",
       pwd_field_type_c: "password",
     };
   },

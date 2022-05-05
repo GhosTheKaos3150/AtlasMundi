@@ -21,12 +21,10 @@
       >
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="100px" class="q-mb-sm">
-            <img
-              src="https://www.rbautomotivo.com.br/wp-content/uploads/2020/10/img-revisao-celta-campinas-paulinia.jpg"
-            />
+            <q-img ratio="1" :src="userPic" />
           </q-avatar>
-          <div class="text-h6 text-weight-bold">Chevrolet S Ford</div>
-          <div class="text-p">@chevsford</div>
+          <div class="text-h6 text-weight-bold">{{ userName }}</div>
+          <div class="text-p">{{ user }}</div>
         </div>
       </q-img>
 
@@ -85,6 +83,11 @@ export default defineComponent({
 
   data() {
     return {
+      user: "@takedo",
+      userName: "Takamura",
+      userPic:
+        "http://bostonvoyager.com/wp-content/uploads/2017/11/personal_photo-233-1000x600.jpg",
+
       drawer: false,
       isHome: false,
     };

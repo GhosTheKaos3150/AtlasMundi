@@ -1,17 +1,17 @@
 <template>
   <q-page class="flex flex-center" style="background-color: #142044">
-    <div class="q-pa-md">
-      <div class="row q-mt-xl absolute-top">
+    <div class="fit q-pa-md">
+      <div class="full-width justify-center row">
         <img
           alt="Atlas-Mundi logo"
           src="logo.png"
-          style="width: 78px; height: 84px"
-          class="q-mt-md absolute-center"
+          style="width: 156px; height: 168px"
+          class="q-mt-md"
         />
       </div>
       <div
-        v-if="!isTermos"
-        class="absolute-bottom q-pa-md q-my-md"
+        v-if="view == 0"
+        class="fit q-pa-md q-my-md"
         style="max-width: 450px; margin-left: auto; margin-right: auto"
       >
         <div class="text-h5 flex flex-center row" style="color: lightgray">
@@ -75,6 +75,23 @@
               <q-icon name="mdi-phone" />
             </template>
           </q-input>
+        </div>
+        <div class="row q-my-lg">
+          <q-btn
+            style="background: #11a3b9; color: lightgray"
+            class="full-width"
+            @click="prosseguir"
+            >PROSSEGUIR</q-btn
+          >
+        </div>
+      </div>
+      <div
+        v-else-if="view == 1"
+        class="fit q-pa-md q-my-md"
+        style="max-width: 450px; margin-left: auto; margin-right: auto"
+      >
+        <div class="text-h5 flex flex-center row" style="color: lightgray">
+          C A D A S T R O
         </div>
         <div class="row q-my-md">
           <q-input
@@ -300,7 +317,7 @@ export default defineComponent({
         " Nam sollicitudin lorem ac nunc laoreet, a porta est pretium. Aenean nec elit ornare, ornare velit vitae, sagittis nunc." +
         " Nulla facilisi. Suspendisse sed ligula nulla. Vestibulum accumsan venenatis venenatis.",
 
-      isTermos: false,
+      view: 0,
 
       dateLocale: {
         days: [
@@ -346,7 +363,7 @@ export default defineComponent({
   },
   methods: {
     prosseguir() {
-      this.isTermos = true;
+      this.view += 1;
     },
     cadastrar() {
       this.createUser();

@@ -9,10 +9,7 @@
         size="200px"
         style="background-color: aliceblue; color: aliceblue"
       >
-        <img
-          class="q-pa-xs"
-          src="https://www.rbautomotivo.com.br/wp-content/uploads/2020/10/img-revisao-celta-campinas-paulinia.jpg"
-        />
+        <q-img ratio="1" :src="userPic" />
       </q-avatar>
       <div class="text-center text-h5" style="color: aliceblue">
         {{ userName }}
@@ -75,8 +72,10 @@ export default defineComponent({
   name: "HomePage",
   data() {
     return {
-      userName: "Chevrolet S Ford",
-      user: "@chevsford",
+      user: "@tekedo",
+      userName: "Takamura",
+      userPic:
+        "http://bostonvoyager.com/wp-content/uploads/2017/11/personal_photo-233-1000x600.jpg",
     };
   },
   methods: {

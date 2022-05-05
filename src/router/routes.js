@@ -18,7 +18,7 @@ const routes = [
   },
 
   {
-    path: "/chat",
+    path: "/chat/:who",
     component: () => import("layouts/FormLayout.vue"),
     children: [{ path: "", component: () => import("pages/ChatPage.vue") }],
   },
