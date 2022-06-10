@@ -38,16 +38,33 @@
         >
           <q-tab-panel name="1" class="fit" style="padding: 0px">
             <l-map
+              :options="options"
               ref="map"
-              v-model:zoom="zoom"
-              :center="[center['lat'], center['long']]"
+              :zoom="zoom"
+              :min-zoom="18"
+              :max-zoom="18"
+              v-model:center.sync="location"
               style="z-index: 0"
+              zoom-animation
             >
               <l-tile-layer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                :url="url"
                 layer-type="base"
                 name="OpenStreetMap"
+                :attribution="attribution"
               ></l-tile-layer>
+              <l-marker :lat-lng="location">
+                <l-icon :icon-anchor="dynamicAnchor" :icon-size="dynamicSize">
+                  <q-avatar size="75px">
+                    <q-img
+                      alt="Minha Foto Emote Sorrindo"
+                      ratio="1 "
+                      :src="userPic"
+                    />
+                  </q-avatar>
+                </l-icon>
+              </l-marker>
+              <!-- <div v-for="marker in markers" :key="marker"></div> -->
             </l-map>
             <q-page-sticky position="bottom-right" :offset="[18, 18]">
               <q-btn fab icon="mdi-pin" style="background-color: #11a3b9" />
@@ -58,6 +75,7 @@
                 padding="xs"
                 icon="mdi-target"
                 style="background-color: lightgray; color: #142044"
+                @click="getLocation"
               />
             </q-page-sticky>
           </q-tab-panel>
@@ -103,16 +121,23 @@
 <script>
 import { defineComponent } from "vue";
 import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
 
 export default defineComponent({
   components: {
     LMap,
     LTileLayer,
+    LMarker,
+    LIcon,
   },
   name: "HomePage",
   data() {
     return {
+      location: [0, 0],
+      locError: null,
+      url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      attribution:
+        '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
       chatUsers: [
         {
           name: "Antonio M Dores",
@@ -130,10 +155,54 @@ export default defineComponent({
       ],
       newMessages: 0,
       tab: "1",
-
       zoom: 18,
-      center: { lat: -3.768838365841603, long: -38.47866626878118 },
+      options: {
+        zoomControl: false,
+        dragging: false,
+      },
+      markers: [
+        // {lat_long: []}
+      ],
+      userPic:
+        "http://bostonvoyager.com/wp-content/uploads/2017/11/personal_photo-233-1000x600.jpg",
+      iconSize: 50,
+      iconSizeText: "50px",
     };
+  },
+  created() {
+    this.getLocation();
+  },
+  mounted() {
+    this.$nextTick(function () {
+      window.setInterval(() => {
+        this.getLocation();
+      }, 1000);
+    });
+  },
+  computed: {
+    dynamicSize() {
+      return [this.iconSize, this.iconSize * 1.15];
+    },
+    dynamicAnchor() {
+      return [this.iconSize / 2, this.iconSize * 1.15];
+    },
+  },
+  methods: {
+    getLocation() {
+      if (!("geolocation" in navigator)) {
+        this.locError = "Geolocation is not available.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.location = [pos.coords.latitude, pos.coords.longitude];
+        },
+        (err) => {
+          this.locError = err.message;
+        }
+      );
+    },
   },
 });
 </script>

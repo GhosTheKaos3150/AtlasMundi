@@ -294,28 +294,23 @@ export default defineComponent({
       ),
       pwd: "",
       pwd_cfm: "",
+      location: [0, 0],
 
       pwd_field_type: "password",
       pwd_field_type_c: "password",
 
       termos_concordo: false,
       termos:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-        "Fusce dapibus consectetur tellus, vel imperdiet arcu cursus quis. " +
-        "Pellentesque hendrerit ac neque in laoreet." +
-        " Donec pharetra dui elit, non ornare nibh ultricies non." +
-        " Cras ac dictum nibh. Etiam eros ligula, lobortis ac nisl at, vestibulum dictum turpis." +
-        " Vivamus risus ipsum, iaculis eu facilisis ultricies, ornare ac purus." +
-        " In sodales maximus nulla, non eleifend velit vestibulum vel." +
-        " Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas." +
-        " Suspendisse potenti. Pellentesque sollicitudin lobortis nulla, sed pretium turpis suscipit ut." +
-        " Ut urna odio, convallis non dolor eget, sagittis vehicula sem." +
-        " Nam et ligula eget quam ultricies efficitur. Mauris et tellus at enim dapibus sollicitudin." +
-        " Curabitur eget elit aliquet, ullamcorper metus sit amet, suscipit augue. Sed scelerisque metus in ultricies maximus." +
-        " Phasellus egestas urna mi, vel convallis lacus imperdiet eget. Maecenas in consectetur nulla, fermentum venenatis sapien." +
-        " Integer sollicitudin eget felis vel ultrices. Sed felis turpis, dictum vitae accumsan vel, gravida eu tortor." +
-        " Nam sollicitudin lorem ac nunc laoreet, a porta est pretium. Aenean nec elit ornare, ornare velit vitae, sagittis nunc." +
-        " Nulla facilisi. Suspendisse sed ligula nulla. Vestibulum accumsan venenatis venenatis.",
+        "Ao baixar o Aplicativo ATLAS-MUNDI, e qualquer atualização do mesmo (conforme permitido por este Contrato de Licença), " +
+        "Você indica que concorda em ficar vinculado a todos os termos e condições deste Contrato de Licença e que Você aceita este Contrato de Licença. " +
+        "referido neste Contrato de Licença como 'Serviços'" +
+        "As partes deste Contrato de Licença reconhecem que os Serviços não são Parte deste Contrato de Licença e não estão vinculados a quaisquer disposições " +
+        "ou obrigações em relação ao Aplicativo Licenciado, como garantia, responsabilidade, manutenção e suporte do mesmo, e não os Serviços, é o único responsável" +
+        " pelo Aplicativo Licenciado e seu conteúdo." +
+        "Este Contrato de Licença pode não fornecer regras de uso para o Aplicativo Licenciado que estejam em conflito com as mais recentes ('Regras de Uso'). " +
+        "ATLAS-MUNDI reconhece que teve a oportunidade de revisar as Regras de Uso e este Contrato de Licença não está em conflito com elas." +
+        "Quando adquirido ou baixado por meio dos Serviços, é licenciado a Você para uso somente sob os termos deste Contrato de Licença. O Licenciador reserva-se " +
+        "todos os direitos não concedidos expressamente a Você. ATLAS-MUNDI deve ser usado em dispositivos que operam com android .",
 
       view: 0,
 
@@ -361,6 +356,9 @@ export default defineComponent({
       },
     };
   },
+  created() {
+    this.getLocation();
+  },
   methods: {
     prosseguir() {
       this.view += 1;
@@ -372,20 +370,30 @@ export default defineComponent({
       return date <= this.maxDate;
     },
     async createUser() {
+      var date_aux = this.date.split("/");
+      date_aux = date_aux.reverse().join("-");
+
+      this.getLocation();
+
       var options = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          taxId: this.cpf,
-          name: this.alias,
+          birthDate: date_aux + "T00:00:00.000-03:00",
+          email: this.email,
+          latitude: this.location[0],
           login: this.user,
+          longitude: this.location[1],
+          name: this.alias,
           password: this.pwd,
-          birthDate: this.date + "T00:00:00.000-03:00",
           phoneNumber: this.phone,
+          taxId: this.cpf,
         }),
       };
+
+      console.log(options.body);
 
       var res = await fetch("/v1/profiles", options);
 
@@ -393,6 +401,7 @@ export default defineComponent({
         this.showLoginSucess(this.alias.split(" ")[0]);
         this.$router.push("/");
       } else {
+        console.log(res.json());
         this.showLoginError();
       }
     },
@@ -408,6 +417,21 @@ export default defineComponent({
             0
           ).getDate()
         )
+      );
+    },
+    getLocation() {
+      if (!("geolocation" in navigator)) {
+        this.locError = "Geolocation is not available.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.location = [pos.coords.latitude, pos.coords.longitude];
+        },
+        (err) => {
+          print(err);
+        }
       );
     },
   },

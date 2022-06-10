@@ -82,12 +82,13 @@ module.exports = configure(function (ctx) {
       port: 8080,
       proxy: [
         {
-          context: ["/", "/v1", "/v1/", "/v1/profiles"],
+          context: ["/", "/v1"],
           target: "http://atlasmundi.herokuapp.com",
+          secure: false,
           changeOrigin: true,
         },
       ],
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework

@@ -32,29 +32,32 @@
         </div>
       </div>
       <div
-        style="height: 9.5vh; background-color: #11a3b9; scroll-behavior: auto"
+        class="q-px-xs q-py-xs"
+        style="height: 9.5vh; background-color: #2d4665; overflow: hidden"
       >
-        <q-scroll-area style="height: 9.5vh">
-          <q-input
-            class="q-mx-sm"
-            borderless
-            autogrow
-            autofocus
-            maxlength="128"
-            style="height: 9vh"
-            v-model="textModel"
-            @keydown.enter.prevent="sendMsg"
-          >
-            <template v-slot:append>
-              <q-icon
-                class="self-start"
-                name="mdi-send"
-                style="height: 9vh"
-                @click="sendMsg"
-              ></q-icon>
-            </template>
-          </q-input>
-        </q-scroll-area>
+        <!-- <q-scroll-area style="height: 8.5vh"> -->
+        <q-input
+          class="q-ma-sm q-px-sm q-py-xs"
+          borderless
+          autogrow
+          autofocus
+          maxlength="128"
+          style="background-color: #c4c4c44f; border-radius: 32px"
+          v-model="textModel"
+          @keydown.enter.prevent="sendMsg"
+        >
+          <template v-slot:after>
+            <q-btn
+              round
+              class="self-center"
+              icon="mdi-send"
+              size="18px"
+              style="background-color: #0096ac; color: aliceblue"
+              @click="sendMsg"
+            ></q-btn>
+          </template>
+        </q-input>
+        <!-- </q-scroll-area> -->
       </div>
     </div>
   </q-page>
