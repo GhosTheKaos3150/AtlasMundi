@@ -6,7 +6,8 @@
     <div class="q-py-sm text-center col">
       <div class="q-py-sm text-center row" style="color: lightgray">
         <div class="q-py-sm text-center col">
-          <div class="text-h6">Cidade-UF</div>
+          <div v-if="!locException" class="text-h6">{{ city }}-{{ uf }}</div>
+          <div v-else class="text-h6">Procurando...</div>
           <div class="text-p">
             <q-badge rounded color="green" align="middle" /> Visivel
           </div>
@@ -135,6 +136,7 @@ export default defineComponent({
     return {
       location: [0, 0],
       locError: null,
+      locException: true,
       url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
@@ -163,10 +165,13 @@ export default defineComponent({
       markers: [
         // {lat_long: []}
       ],
+      users: {},
       userPic:
         "http://bostonvoyager.com/wp-content/uploads/2017/11/personal_photo-233-1000x600.jpg",
       iconSize: 50,
       iconSizeText: "50px",
+      city: "CIDADE",
+      uf: "UF",
     };
   },
   created() {
@@ -178,6 +183,7 @@ export default defineComponent({
         this.getLocation();
       }, 1000);
     });
+    this.getProfileData();
   },
   computed: {
     dynamicSize() {
@@ -188,20 +194,61 @@ export default defineComponent({
     },
   },
   methods: {
-    getLocation() {
+    getProfileData() {
+      var id = localStorage.getItem("profileId");
+      var options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
+
+      fetch(`/v1/profiles/${id}`, options)
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          console.log(json);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
+    async getLocation() {
       if (!("geolocation" in navigator)) {
         this.locError = "Geolocation is not available.";
         return;
       }
-
+      var error = false;
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           this.location = [pos.coords.latitude, pos.coords.longitude];
         },
         (err) => {
           this.locError = err.message;
+          error = true;
         }
       );
+
+      if (!error) {
+        await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${this.location[0]}&lon=${this.location[1]}`
+        )
+          .then((res) => {
+            this.locException = false;
+            return res.json();
+          })
+          .then((json) => {
+            this.city = json.address.town;
+            this.uf = json.address.state.substr(0, 2).toUpperCase();
+            this.locException = false;
+          })
+          .catch((err) => {
+            this.locException = true;
+          });
+      }
     },
   },
 });

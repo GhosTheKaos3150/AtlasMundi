@@ -57,12 +57,12 @@
             <q-icon name="mdi-cog" />
           </q-item-section>
 
-          <q-item-section class="text-h6"> Configurações </q-item-section>
+          <!-- <q-item-section class="text-h6"> Configurações </q-item-section>
         </q-item>
         <q-item clickable v-ripple class="q-py-lg">
           <q-item-section avatar>
             <q-icon name="mdi-logout" />
-          </q-item-section>
+          </q-item-section> -->
 
           <q-item-section class="text-h6" @click="sair"> Sair </q-item-section>
         </q-item>
@@ -94,8 +94,32 @@ export default defineComponent({
   },
   mounted() {
     this.isHome = this.$route.path == "/home";
+    this.getProfileData();
   },
   methods: {
+    async getProfileData() {
+      var id = localStorage.getItem("profileId");
+      var options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
+
+      await fetch(`/v1/profiles/${id}`, options)
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          this.user = `@${json.login}`;
+          this.userName = `${json.name}`;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
     sair() {
       this.$router.push("/");
       this.isHome = false;

@@ -78,7 +78,33 @@ export default defineComponent({
         "http://bostonvoyager.com/wp-content/uploads/2017/11/personal_photo-233-1000x600.jpg",
     };
   },
+  async mounted() {
+    this.getProfileData();
+  },
   methods: {
+    async getProfileData() {
+      var id = localStorage.getItem("profileId");
+      var options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
+
+      await fetch(`/v1/profiles/${id}`, options)
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          this.user = `@${json.login}`;
+          this.userName = `${json.name}`;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
     profileEdit() {
       this.$router.push("/profileedit");
     },

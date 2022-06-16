@@ -57,6 +57,21 @@
           </template>
         </q-input>
       </div>
+      <div class="row q-my-md">
+        <q-input
+          dark
+          outlined
+          round
+          class="flex col"
+          label="Telefone"
+          v-model="phone"
+          type="phone"
+        >
+          <template v-slot:prepend>
+            <q-icon name="mdi-phone" />
+          </template>
+        </q-input>
+      </div>
     </div>
     <div class="fit q-mx-xl">
       <div class="row q-my-lg">
@@ -87,12 +102,41 @@ export default defineComponent({
   name: "HomePage",
   data() {
     return {
-      name: "Takamura",
-      user: "@takedo",
-      email: "takamuratakedo1101@email.com",
+      name: "",
+      user: "",
+      email: "",
+      phone: "",
     };
   },
+  mounted() {
+    this.getProfileData();
+  },
   methods: {
+    async getProfileData() {
+      var id = localStorage.getItem("profileId");
+      var options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
+
+      await fetch(`/v1/profiles/${id}`, options)
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          this.user = `@${json.login}`;
+          this.name = `${json.name}`;
+          this.email = `${json.email}`;
+          this.phone = `${json.phoneNumber}`;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
     goBack() {
       this.$router.go(-1);
     },

@@ -101,8 +101,6 @@ export default defineComponent({
   },
   methods: {
     async sendToHome() {
-      console.log(this.user);
-      console.log(this.pwd);
       if (this.user.length >= 3 && this.pwd.length >= 8) {
         var options = {
           method: "POST",
@@ -118,7 +116,9 @@ export default defineComponent({
         var res = await fetch("/login", options);
 
         if (res.status === 200) {
-          localStorage.setItem("authToken", res.body);
+          var json = await res.json();
+          localStorage.setItem("profileId", json["profileId"]);
+          localStorage.setItem("authToken", json["token"]);
           this.$router.push("/home");
         } else {
           this.showLoginError();
