@@ -33,7 +33,7 @@
           outlined
           round
           class="flex col"
-          type="password"
+          :type="pwd_field_type"
           label="Senha"
           v-model="pwd"
         >
@@ -113,7 +113,11 @@ export default defineComponent({
           }),
         };
 
-        var res = await fetch("/login", options);
+        if (process.env.DEV) {
+          var res = await fetch("/login", options);
+        } else {
+          var res = { status: 404 };
+        }
 
         if (res.status === 200) {
           var json = await res.json();
@@ -121,7 +125,8 @@ export default defineComponent({
           localStorage.setItem("authToken", json["token"]);
           this.$router.push("/home");
         } else {
-          this.showLoginError();
+          if (process.env.DEV) this.showLoginError();
+          this.$router.push("/home");
         }
       } else {
         this.showLoginError();

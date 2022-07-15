@@ -78,7 +78,7 @@
         <q-btn
           style="background: #11a3b9; color: lightgray"
           class="full-width"
-          @click="cadastrar"
+          @click="updateProfileData"
           >Salvar</q-btn
         >
       </div>
@@ -106,10 +106,11 @@ export default defineComponent({
       user: "",
       email: "",
       phone: "",
+      fullData: {},
     };
   },
   mounted() {
-    this.getProfileData();
+    if (process.env.DEV) this.getProfileData();
   },
   methods: {
     async getProfileData() {
@@ -131,6 +132,42 @@ export default defineComponent({
           this.name = `${json.name}`;
           this.email = `${json.email}`;
           this.phone = `${json.phoneNumber}`;
+
+          this.fullData = json;
+          console.log(json);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
+    async updateProfileData() {
+      var id = localStorage.getItem("profileId");
+      var options = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: {
+          birthDate: this.fullData.birthDate,
+          email: this.email,
+          latitude: this.fullData.latitude,
+          login: this.user,
+          longitude: this.fullData.longitude,
+          name: this.name,
+          password: this.fullData.password,
+          phoneNumber: this.phone,
+          taxId: this.fullData.taxId,
+        },
+      };
+
+      await fetch(`/v1/profiles/${id}`, options)
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          this.$router.push("/profile");
         })
         .catch((err) => {
           console.log(err);

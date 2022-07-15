@@ -72,11 +72,28 @@ export default defineComponent({
   data() {
     return {
       messages: [
-        { msg: "Mensagem de Teste 1", user: "takedo" },
-        { msg: "Mensagem de Teste 2", user: "abc" },
-        { msg: "Mensagem de Teste 3", user: "takedo" },
-        { msg: "Mensagem de Teste 4", user: "abc" },
-        { msg: "Mensagem de Teste 5", user: "takedo" },
+        { msg: "Oi cara. seu cabelo é muito bonito.", user: "takedo" },
+        { msg: "oi oi", user: "abc" },
+        { msg: "aaaaaaa obrigada!", user: "abc" },
+        {
+          msg: 'Então, "convarsa para afastar o tédio" é uma boa descrição. Qual assunto pra afastar o tédio normalmente vc usa?',
+          user: "takedo",
+        },
+        { msg: "kkkkkkkkkkkkk", user: "abc" },
+        { msg: "hj por incrível que pareça to sem assunto", user: "abc" },
+        { msg: "acabei de fazer uma prova que acabou comigo", user: "abc" },
+        {
+          msg: "Prova é tenso, imagino como deve ser se acostumar dps de dois anos de ensino a distância.",
+          user: "takedo",
+        },
+        { msg: "Você faz que curso mesmo?", user: "takedo" },
+        { msg: "Chuto que seja veterinária.", user: "takedo" },
+        { msg: "tô fazendo enfermagem", user: "abc" },
+        { msg: "nss ctz q minha nota doi horrível", user: "abc" },
+        {
+          msg: "Enfermagem é complicado, e as vezes até desvalorizado.",
+          user: "takedo",
+        },
       ],
       user: "takedo",
       chatW: { user: "amdores", nome: "Antonio M Dores" },

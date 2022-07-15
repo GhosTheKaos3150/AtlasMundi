@@ -79,7 +79,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.getProfileData();
+    if (process.env.DEV) this.getProfileData();
   },
   methods: {
     async getProfileData() {

@@ -395,13 +395,18 @@ export default defineComponent({
 
       console.log(options.body);
 
-      var res = await fetch("/v1/profiles", options);
+      if (process.env.DEV) {
+        var res = await fetch("/v1/profiles", options);
+      } else {
+        var res = { status: 404 };
+      }
 
       if (res.status === 200) {
         this.showLoginSucess(this.alias.split(" ")[0]);
         this.$router.push("/");
       } else {
         console.log(res.json());
+        this.$router.push("/");
         this.showLoginError();
       }
     },

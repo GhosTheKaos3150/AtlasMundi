@@ -59,8 +59,9 @@
                   <q-avatar size="75px">
                     <q-img
                       alt="Minha Foto Emote Sorrindo"
-                      ratio="1 "
+                      ratio="1"
                       :src="userPic"
+                      style="border: 2px solid #11a3b9; border-radius: 100%"
                     />
                   </q-avatar>
                 </l-icon>
@@ -123,6 +124,7 @@
 import { defineComponent } from "vue";
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
+import { Geolocation } from "@capacitor/geolocation";
 
 export default defineComponent({
   components: {
@@ -183,7 +185,7 @@ export default defineComponent({
         this.getLocation();
       }, 1000);
     });
-    this.getProfileData();
+    if (process.env.DEV) this.getProfileData();
   },
   computed: {
     dynamicSize() {
@@ -213,24 +215,65 @@ export default defineComponent({
         })
         .catch((err) => {
           console.log(err);
-          this.$router.push("/");
+          // this.$router.push("/");
         });
     },
     async getLocation() {
-      if (!("geolocation" in navigator)) {
-        this.locError = "Geolocation is not available.";
-        return;
-      }
-      var error = false;
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          this.location = [pos.coords.latitude, pos.coords.longitude];
-        },
-        (err) => {
-          this.locError = err.message;
-          error = true;
+      if (process.env.DEV) {
+        if (!("geolocation" in navigator)) {
+          this.locError = "Geolocation is not available.";
+          return;
         }
-      );
+        var error = false;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            this.location = [pos.coords.latitude, pos.coords.longitude];
+          },
+          (err) => {
+            this.locError = err.message;
+            error = true;
+          }
+        );
+      } else {
+        var error = false;
+
+        if ((await Geolocation.checkPermissions()).location != "granted")
+          await Geolocation.requestPermissions("location");
+
+        Geolocation.getCurrentPosition()
+          .then((pos) => {
+            this.location = [pos.coords.latitude, pos.coords.longitude];
+          })
+          .catch((err) => {
+            this.locError = err.message;
+            error = true;
+          });
+      }
+
+      // var options = {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+      //   },
+      //   body: {
+      //     latitude: this.location[0],
+      //     longitude: this.location[1],
+      //   },
+      // };
+      // await fetch(
+      //   `/v1/profiles/${localStorage.getItem("profileId")}/location`,
+      //   options
+      // )
+      //   .then((res) => {
+      //     return res.json();
+      //   })
+      //   .then((json) => {
+      //     console.log(json);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
 
       if (!error) {
         await fetch(

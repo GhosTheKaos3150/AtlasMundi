@@ -1,7 +1,7 @@
 <template>
   <q-layout>
-    <q-header elevated>
-      <q-toolbar style="background: #11a3b9; color: lightgray">
+    <q-header>
+      <q-toolbar style="background: #142044">
         <q-btn flat round dense icon="mdi-menu" @click="drawer = !drawer" />
         <q-toolbar-title>ATLAS MUNDI</q-toolbar-title>
       </q-toolbar>
@@ -94,7 +94,7 @@ export default defineComponent({
   },
   mounted() {
     this.isHome = this.$route.path == "/home";
-    this.getProfileData();
+    if (process.env.DEV) this.getProfileData();
   },
   methods: {
     async getProfileData() {
@@ -117,11 +117,13 @@ export default defineComponent({
         })
         .catch((err) => {
           console.log(err);
-          this.$router.push("/");
+          // this.$router.push("/");
         });
     },
     sair() {
       this.$router.push("/");
+      localStorage.setItem("authToken", null);
+      localStorage.setItem("profileId", null);
       this.isHome = false;
     },
     perfil() {
